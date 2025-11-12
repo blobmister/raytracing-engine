@@ -1,0 +1,3 @@
+/home/krish/raytracing-engine/build/CMakeFiles/ppm-image.dir
+/home/krish/raytracing-engine/build/CMakeFiles/edit_cache.dir
+/home/krish/raytracing-engine/build/CMakeFiles/rebuild_cache.dir

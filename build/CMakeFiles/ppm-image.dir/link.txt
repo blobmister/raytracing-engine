@@ -1,0 +1,1 @@
+/usr/bin/c++ "CMakeFiles/ppm-image.dir/ppm-image/main.cxx.o" -o ppm-image 
