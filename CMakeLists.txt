@@ -1,9 +1,34 @@
 cmake_minimum_required(VERSION 3.23)
 
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 project(Raytracing)
 
-add_executable(ppm-image)
-target_sources(ppm-image
+add_executable(main)
+target_sources(main
 	PRIVATE
-		ppm-image/main.cxx
+		src/main.cxx
+)
+
+add_library(vec INTERFACE)
+target_sources(vec
+	INTERFACE
+		FILE_SET HEADERS
+		BASE_DIRS
+			src/object-library
+		FILES
+			src/object-library/vec3.h
+			src/object-library/color.h
+)
+
+target_include_directories(vec
+	INTERFACE
+		src/object-library
+)
+
+target_link_libraries(main
+	PRIVATE
+		vec
 )

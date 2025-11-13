@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/krish/raytracing-engine/ppm-image/main.cxx" "CMakeFiles/ppm-image.dir/ppm-image/main.cxx.o" "gcc" "CMakeFiles/ppm-image.dir/ppm-image/main.cxx.o.d"
+  "/home/krish/raytracing-engine/src/main.cxx" "CMakeFiles/main.dir/src/main.cxx.o" "gcc" "CMakeFiles/main.dir/src/main.cxx.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

@@ -117,41 +117,41 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named ppm-image
+# Target rules for targets named main
 
 # Build rule for target.
-ppm-image: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ppm-image
-.PHONY : ppm-image
+main: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 main
+.PHONY : main
 
 # fast build rule for target.
-ppm-image/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ppm-image.dir/build.make CMakeFiles/ppm-image.dir/build
-.PHONY : ppm-image/fast
+main/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
+.PHONY : main/fast
 
-ppm-image/main.o: ppm-image/main.cxx.o
-.PHONY : ppm-image/main.o
+src/main.o: src/main.cxx.o
+.PHONY : src/main.o
 
 # target to build an object file
-ppm-image/main.cxx.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ppm-image.dir/build.make CMakeFiles/ppm-image.dir/ppm-image/main.cxx.o
-.PHONY : ppm-image/main.cxx.o
+src/main.cxx.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/main.cxx.o
+.PHONY : src/main.cxx.o
 
-ppm-image/main.i: ppm-image/main.cxx.i
-.PHONY : ppm-image/main.i
+src/main.i: src/main.cxx.i
+.PHONY : src/main.i
 
 # target to preprocess a source file
-ppm-image/main.cxx.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ppm-image.dir/build.make CMakeFiles/ppm-image.dir/ppm-image/main.cxx.i
-.PHONY : ppm-image/main.cxx.i
+src/main.cxx.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/main.cxx.i
+.PHONY : src/main.cxx.i
 
-ppm-image/main.s: ppm-image/main.cxx.s
-.PHONY : ppm-image/main.s
+src/main.s: src/main.cxx.s
+.PHONY : src/main.s
 
 # target to generate assembly for a file
-ppm-image/main.cxx.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ppm-image.dir/build.make CMakeFiles/ppm-image.dir/ppm-image/main.cxx.s
-.PHONY : ppm-image/main.cxx.s
+src/main.cxx.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/main.cxx.s
+.PHONY : src/main.cxx.s
 
 # Help Target
 help:
@@ -161,10 +161,10 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... ppm-image"
-	@echo "... ppm-image/main.o"
-	@echo "... ppm-image/main.i"
-	@echo "... ppm-image/main.s"
+	@echo "... main"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
 .PHONY : help
 
 
