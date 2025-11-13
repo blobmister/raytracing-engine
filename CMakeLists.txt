@@ -20,6 +20,7 @@ target_sources(vec
 			src/object-library
 		FILES
 			src/object-library/vec3.h
+			src/object-library/ray.h
 			src/object-library/color.h
 )
 
