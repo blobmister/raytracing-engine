@@ -1,3 +1,0 @@
-/home/krish/raytracing-engine/build/CMakeFiles/main.dir
-/home/krish/raytracing-engine/build/CMakeFiles/edit_cache.dir
-/home/krish/raytracing-engine/build/CMakeFiles/rebuild_cache.dir
