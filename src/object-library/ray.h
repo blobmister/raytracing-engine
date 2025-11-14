@@ -1,7 +1,7 @@
 #ifndef RAY_H
 #define RAY_H
 
-#include "vec.h"
+#include "vec3.h"
 
 class ray {
 	private:
@@ -19,6 +19,6 @@ class ray {
 		const vec3& direction() const { return dir; }
 
 		point3 at(double t) const { return orig + (t*dir); }
-}
+};
 
 #endif
