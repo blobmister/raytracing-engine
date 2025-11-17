@@ -22,7 +22,7 @@ The repo consists of an object interfact that can be used to generate images. Th
 # Images produced
 Below I show the progression of images produced through the development of this engine.
 
-## Sphere coloured by calculated surface normals
+## Sphere gradient based on surface normals
 <img width="400" height="225" alt="image" src="https://github.com/user-attachments/assets/464573e3-928d-4bdf-b726-d07dc10925e2" />
 
 ### Currently working on the rest...
