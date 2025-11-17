@@ -24,6 +24,7 @@ target_sources(vec
 			src/object-library/color.h
 			src/object-library/hittable.h
 			src/object-library/sphere.h
+			src/object-library/hittable-list.h
 )
 
 target_include_directories(vec
