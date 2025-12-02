@@ -26,6 +26,7 @@ target_sources(vec
 			src/object-library/sphere.h
 			src/object-library/hittable-list.h
 			src/object-library/util.h
+			src/object-library/interval.h
 )
 
 target_include_directories(vec
