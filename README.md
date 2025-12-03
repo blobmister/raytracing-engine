@@ -17,7 +17,7 @@ cd build
 ./main > image.ppm
 ```
 # Features
-The repo consists of an object interfact that can be used to generate images. This interface has header only implementations of a basic 3-Dimension vector (which is used for storing geometric and colour data), and header only implementations of spheres, with logic to calculate ray intersctions.
+Allows users to generate images of basic spheres, of differing materials. Will eventually allow users to configure an environment using a simple config.txt file, which the program should read in to create images, allowing for comparisons between single-core CPU, multi-core CPU, and multi-core GPU in the mathematics involved in generating these images.
 
 # Images produced
 Below I show the progression of images produced through the development of this engine.
