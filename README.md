@@ -25,4 +25,14 @@ Below I show the progression of images produced through the development of this 
 ## Sphere gradient based on surface normals
 <img width="400" height="225" alt="image" src="https://github.com/user-attachments/assets/464573e3-928d-4bdf-b726-d07dc10925e2" />
 
+A simple sphere rendered by calculating suprphase normals of intersecting rays, and using those normals to create a simple gradient colouring. 
+
+### Anti-Aliasing
+To remove the jagged edges of the previous image, a simple anti-aliasing implementation is used, where we sample colours from a small square around each pixel, and uniformly average the colour.
+A very large sample radius is used in the below image to make the effect clearer (subsequent images use a more sensible radius of 0.5).
+
+
+<img width="400" height="225" alt="image" src="https://github.com/user-attachments/assets/cbe46640-1a2e-448b-897d-ef711cfb3c29" />
+
+
 ### Currently working on the rest...
