@@ -27,6 +27,7 @@ target_sources(vec
 			src/object-library/hittable-list.h
 			src/object-library/util.h
 			src/object-library/interval.h
+			src/object-library/camera.h
 )
 
 target_include_directories(vec
