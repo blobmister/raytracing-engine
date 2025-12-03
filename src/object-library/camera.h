@@ -9,6 +9,8 @@ class camera {
     public:
         double aspect_ratio = 1.0;
         int image_width = 100;
+        int samples_per_pixel = 100;
+        double sample_radius = 0.5;
 
         void render(const hittable& world) {
             initialize();
@@ -18,21 +20,25 @@ class camera {
             for (int j = 0; j < image_height; j++) {
                 std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::flush;
                 for (int i = 0; i < image_width; i++) {
-                    auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
-                    auto ray_direction = pixel_center - center;
-                    ray r(center, ray_direction);
+                    color pixel_color(0,0,0);
 
-                    color pixel_color = ray_color(r, world);
-                    write_color(std::cout, pixel_color);
+                    // Averages the colour around the pixel to avoid 'jagged' edges
+                    for (int sample = 0; sample < samples_per_pixel; sample++) {
+                        ray r = get_ray(i, j);
+                        pixel_color += ray_color(r, world);
+                    }
+
+                    write_color(std::cout, pixel_samples_scale * pixel_color);
                 }
             }
 
-            std::clog << "\rDone.					    	\n";
+            std::clog << "\rDone.                                   \n";
         }
 
     private:
 
         int image_height;
+        double pixel_samples_scale;
         point3 center;
         point3 pixel00_loc;
         vec3 pixel_delta_u;
@@ -50,6 +56,8 @@ class camera {
 
             image_height = int(image_width / aspect_ratio);
             image_height = (image_height < 1) ? 1 : image_height;
+
+            pixel_samples_scale = 1.0 / samples_per_pixel;
 
             center = point3(0, 0, 0);
 
@@ -79,6 +87,37 @@ class camera {
 	        pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
 
+        }
+
+        /*
+            Constructs a camera ray originating from the origin and directed at a randomly
+            sampled point around the pixel location (i, j). This is used by the render() function
+            as for a simple anti-aliasing implementation. 
+
+            User can set the samples_per_pixel attribute in their camera object in order to set the number of samples for
+            anti-aliasing.
+
+        */
+        ray get_ray(int i, int j) {
+            auto offset = sample_square();
+            auto pixel_sample = pixel00_loc + ((i + offset.x()) * pixel_delta_u) + ((j + offset.y()) * pixel_delta_v);
+
+            auto ray_origin = center;
+            auto ray_direction = pixel_sample - ray_origin;
+
+            return ray(ray_origin, ray_direction);
+        }
+
+        /*
+            Returns a vector to a random point in the a square with side length 2 * sample-radius
+
+            Used as a helper function to get_ray()
+        */
+        vec3 sample_square() const {
+            auto px = random_double() - 0.5;
+            auto py = random_double() - 0.5;
+
+            return vec3(px * sample_radius * 2, py * sample_radius * 2, 0);
         }
         
 
