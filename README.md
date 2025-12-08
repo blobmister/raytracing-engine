@@ -41,4 +41,9 @@ A very large sample radius is used in the below image to make the effect clearer
 
 A basic rejection based diffusion algorithm is used to generate this image. When a ray hits the surphace of the sphere, it bounces off in a random direction, and takes on the colour of whatever it hits after that. 
 
+### Shadow Acne
+Due to the recursive method of generating a diffuse image, often dark areas are generated due to floating point errors. This is referred to as shadow acne. Below is a diffuse image with shadow acne correctionS
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/6e0efc54-c671-4206-ac68-ee74d29465d5" />
+
 ### Currently working on the rest...
