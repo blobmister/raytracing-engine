@@ -15,11 +15,12 @@ int main() {
 	camera cam;
 
 	cam.aspect_ratio = 16.0 / 9.0;
-	cam.image_width = 400;
+	cam.image_width = 1920;
 	cam.samples_per_pixel = 10;
 	cam.sample_radius = 0.5;
 	cam.diffuse = true;
 	cam.diffusion_colour_amount = 0.5;
+	cam.max_recurse_depth = 50;
 
 	cam.render(world);
 

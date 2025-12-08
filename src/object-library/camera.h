@@ -13,6 +13,7 @@ class camera {
         double sample_radius = 0.5;
         bool diffuse = true;
         double diffusion_colour_amount = 0.5;
+        int max_recurse_depth = 10;
 
         void render(const hittable& world) {
             initialize();
@@ -20,21 +21,21 @@ class camera {
             std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
             
             for (int j = 0; j < image_height; j++) {
-                std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::flush;
+                generate_loading_bar(j);
                 for (int i = 0; i < image_width; i++) {
                     color pixel_color(0,0,0);
 
                     // Averages the colour around the pixel to avoid 'jagged' edges
                     for (int sample = 0; sample < samples_per_pixel; sample++) {
                         ray r = get_ray(i, j);
-                        pixel_color += ray_color(r, world);
+                        pixel_color += ray_color(r, max_recurse_depth, world);
                     }
 
                     write_color(std::cout, pixel_samples_scale * pixel_color);
                 }
             }
 
-            std::clog << "\rDone.                                   \n";
+            std::clog << "\rDone.                                                                                                         \n";
         }
 
     private:
@@ -46,6 +47,16 @@ class camera {
         vec3 pixel_delta_u;
         vec3 pixel_delta_v;
         
+        void generate_loading_bar(int j) {
+            int percent_complete = static_cast<int>((double(j)/image_height) * 100.0);
+            std::clog << "[";
+            for (int i = 0; i < 100; i++) {
+                if (i < percent_complete) std::clog << "=";
+                else if (i == percent_complete) std::clog << ">";
+                else std::clog << " ";
+            }
+            std::clog << "] " << percent_complete << "% \r";
+        }
 
         void initialize() {
             /*
@@ -126,7 +137,9 @@ class camera {
         /*
             Set to calculate colours based on direction of normals currently
         */
-        color ray_color(const ray& r, const hittable& world) {
+        color ray_color(const ray& r, int depth, const hittable& world) {
+            if (depth <= 0) return color(0, 0, 0);
+
             hit_record rec;
             if (world.hit(r, interval(0, infinity), rec)) {
                 vec3 direction;
@@ -134,7 +147,7 @@ class camera {
                 // Conditionally apply diffusion
                 if (diffuse) {
                     direction = random_on_hemisphere(rec.normal);
-                    return  diffusion_colour_amount * ray_color(ray(rec.p, direction), world);
+                    return  diffusion_colour_amount * ray_color(ray(rec.p, direction), depth - 1, world);
                 }
                 
                 return 0.5 * (rec.normal + color(1, 1, 1));
