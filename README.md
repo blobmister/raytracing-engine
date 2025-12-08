@@ -35,4 +35,10 @@ A very large sample radius is used in the below image to make the effect clearer
 <img width="400" height="225" alt="image" src="https://github.com/user-attachments/assets/cbe46640-1a2e-448b-897d-ef711cfb3c29" />
 
 
+## Diffusion
+
+<img width="400" height="225" alt="image" src="https://github.com/user-attachments/assets/bbaccda3-a8b8-45fc-9cc6-d94431ed261e" />
+
+A basic rejection based diffusion algorithm is used to generate this image. When a ray hits the surphace of the sphere, it bounces off in a random direction, and takes on the colour of whatever it hits after that. 
+
 ### Currently working on the rest...
