@@ -23,7 +23,7 @@ inline double random_double() {
 	return dis(gen);
 }
 
-inline double random_doulbe(double min, double max) {
+inline double random_double(double min, double max) {
 	return min + (max - min) * random_double();
 }
 

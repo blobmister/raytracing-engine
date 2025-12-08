@@ -55,6 +55,14 @@ class vec3 {
 			return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
 		}
 
+		static vec3 random() {
+			return vec3(random_double(), random_double(), random_double());
+		}
+
+		static vec3 random(double min, double max) {
+			return vec3(random_double(min,max), random_double(min,max), random_double(min,max));
+		}
+
 
 };
 
@@ -113,6 +121,43 @@ inline vec3 cross(const vec3& u, const vec3& v) {
 
 inline vec3 unit_vector(const vec3& u) {
 	return u / u.length();
+}
+
+/*
+	Generates a unit random unit vector using the rejection algorithm as follows:
+
+	Generate a random vector within the unit square. If this vector falls within the unit circle enscribed in this unit
+	square, normalise it and return it, otherwise reject and generate a new one. This solution is easier to implement than other
+	analytical based solutions for the purposes of generating diffuse materials.
+
+	While not strictly necessary to reject all vectors outside of the unit circle, it ensures that the distribution
+	of random vectors is uniformly distributed. Using some basic math, it is found that each attempt has roughly 52% chance of 
+	success, which is adequate for this purpose, and often faster than the analytical methods due to the simple mathematics required
+
+*/
+inline vec3 random_unit_vector() {
+	while (true) {
+		auto p = vec3::random(-1, 1);
+		auto lensq = p.length_squared();
+
+		// Reject values that are too small to avoid floating point issues
+		if (1e-160 < lensq && lensq <= 1) {
+			return p / sqrt(lensq);
+		}
+	}
+}
+
+/*
+	Generates a random unit vector on the hemisphere of a circle. Guarantees that that the vector is pointing outwards from 
+	the surface.
+*/
+inline vec3 random_on_hemisphere(const vec3& normal) {
+	vec3 on_unit_hemisphere = random_unit_vector();
+	if (dot(on_unit_hemisphere, normal) > 0.0) {
+		return on_unit_hemisphere;
+	} else {
+		return -on_unit_hemisphere;
+	}
 }
 
 #endif

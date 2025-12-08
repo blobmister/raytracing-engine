@@ -16,8 +16,10 @@ int main() {
 
 	cam.aspect_ratio = 16.0 / 9.0;
 	cam.image_width = 400;
-	cam.samples_per_pixel = 100;
-	cam.sample_radius = 5;
+	cam.samples_per_pixel = 10;
+	cam.sample_radius = 0.5;
+	cam.diffuse = true;
+	cam.diffusion_colour_amount = 0.5;
 
 	cam.render(world);
 
