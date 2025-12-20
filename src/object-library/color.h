@@ -10,6 +10,17 @@
 // between color vectors and geometry vectors
 using color = vec3;
 
+/*
+ * Converts RGB values from the liniear space to the gamma space.
+ */
+inline double linear_to_gamma(double linear_component) {
+    if (linear_component > 0) {
+        return std::sqrt(linear_component);
+    }
+
+    return 0;
+}
+
 // Writes out color data to specified outstream from one vector
 //
 // Expects vector components to be in the range [0, 1]. Converts them
@@ -18,6 +29,10 @@ inline void write_color(std::ostream& out, const color& pixel_color) {
 	auto r = pixel_color.x();
 	auto g = pixel_color.y();
 	auto b = pixel_color.z();
+
+	r = linear_to_gamma(r);
+	g = linear_to_gamma(g);
+	b = linear_to_gamma(b);
 
 	// Translate the [0, 1] value into the appropriate [0, 255] byte range
 	static const interval intensity(0.000, 0.999);
