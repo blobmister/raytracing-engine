@@ -10,13 +10,11 @@
 // between color vectors and geometry vectors
 using color = vec3;
 
-
-
 // Writes out color data to specified outstream from one vector
 //
-// Expects vector components to be in the range [0, 1]. Converts them 
+// Expects vector components to be in the range [0, 1]. Converts them
 // to the [0, 255] range, and then outputs them in the ppm format.
-void write_color(std::ostream& out, const color& pixel_color) {
+inline void write_color(std::ostream& out, const color& pixel_color) {
 	auto r = pixel_color.x();
 	auto g = pixel_color.y();
 	auto b = pixel_color.z();
@@ -31,4 +29,3 @@ void write_color(std::ostream& out, const color& pixel_color) {
 }
 
 #endif
-

@@ -19,7 +19,7 @@ class camera {
             initialize();
 
             std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
-            
+
             for (int j = 0; j < image_height; j++) {
                 generate_loading_bar(j);
                 for (int i = 0; i < image_width; i++) {
@@ -46,7 +46,7 @@ class camera {
         point3 pixel00_loc;
         vec3 pixel_delta_u;
         vec3 pixel_delta_v;
-        
+
         void generate_loading_bar(int j) {
             int percent_complete = static_cast<int>((double(j)/image_height) * 100.0);
             std::clog << "[";
@@ -78,7 +78,7 @@ class camera {
             auto focal_length = 1.0;
             auto viewport_height = 2.0;
             auto viewport_width = viewport_height * (double(image_width)/image_height);
-            
+
             /*
                 Viewport vectors
 
@@ -105,7 +105,7 @@ class camera {
         /*
             Constructs a camera ray originating from the origin and directed at a randomly
             sampled point around the pixel location (i, j). This is used by the render() function
-            as for a simple anti-aliasing implementation. 
+            as for a simple anti-aliasing implementation.
 
             User can set the samples_per_pixel attribute in their camera object in order to set the number of samples for
             anti-aliasing.
@@ -132,7 +132,7 @@ class camera {
 
             return vec3(px * sample_radius * 2, py * sample_radius * 2, 0);
         }
-        
+
 
         /*
             Set to calculate colours based on direction of normals currently
@@ -146,10 +146,10 @@ class camera {
 
                 // Conditionally apply diffusion
                 if (diffuse) {
-                    direction = random_on_hemisphere(rec.normal);
+                    direction = rec.normal + random_unit_vector();
                     return  diffusion_colour_amount * ray_color(ray(rec.p, direction), depth - 1, world);
                 }
-                
+
                 return 0.5 * (rec.normal + color(1, 1, 1));
             }
 

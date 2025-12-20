@@ -4,6 +4,8 @@
 #include <cmath>
 #include <iostream>
 
+#include "util.h"
+
 
 // Simple 3-Dimensional vector class
 //
@@ -80,7 +82,7 @@ inline std::ostream& operator<<(std::ostream& out, const vec3& v) {
 }
 
 inline vec3 operator+(const vec3& u, const vec3& v) {
-	return vec3(u.e[0] + v.e[0], u.e[1] + v.e[1], u.e[2] + v.e[2]); 
+	return vec3(u.e[0] + v.e[0], u.e[1] + v.e[1], u.e[2] + v.e[2]);
 }
 
 inline vec3 operator-(const vec3& u, const vec3& v) {
@@ -131,7 +133,7 @@ inline vec3 unit_vector(const vec3& u) {
 	analytical based solutions for the purposes of generating diffuse materials.
 
 	While not strictly necessary to reject all vectors outside of the unit circle, it ensures that the distribution
-	of random vectors is uniformly distributed. Using some basic math, it is found that each attempt has roughly 52% chance of 
+	of random vectors is uniformly distributed. Using some basic math, it is found that each attempt has roughly 52% chance of
 	success, which is adequate for this purpose, and often faster than the analytical methods due to the simple mathematics required
 
 */
@@ -148,7 +150,7 @@ inline vec3 random_unit_vector() {
 }
 
 /*
-	Generates a random unit vector on the hemisphere of a circle. Guarantees that that the vector is pointing outwards from 
+	Generates a random unit vector on the hemisphere of a circle. Guarantees that that the vector is pointing outwards from
 	the surface.
 */
 inline vec3 random_on_hemisphere(const vec3& normal) {
@@ -161,9 +163,3 @@ inline vec3 random_on_hemisphere(const vec3& normal) {
 }
 
 #endif
-
-
-
-
-
-

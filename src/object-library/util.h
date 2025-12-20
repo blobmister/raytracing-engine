@@ -2,7 +2,6 @@
 #define UTIL_H
 
 #include <cmath>
-#include <iostream>
 #include <limits>
 #include <memory>
 #include <random>
@@ -27,9 +26,4 @@ inline double random_double(double min, double max) {
 	return min + (max - min) * random_double();
 }
 
-#include "color.h"
-#include "ray.h"
-#include "vec3.h"
-
 #endif
-
