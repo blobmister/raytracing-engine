@@ -9,34 +9,35 @@ project(Raytracing)
 
 add_executable(main)
 target_sources(main
-	PRIVATE
-		src/main.cxx
+ PRIVATE
+  src/main.cxx
 )
 
 add_library(vec INTERFACE)
 target_sources(vec
-	INTERFACE
-		FILE_SET HEADERS
-		BASE_DIRS
-			src/object-library
-		FILES
-			src/object-library/vec3.h
-			src/object-library/ray.h
-			src/object-library/color.h
-			src/object-library/hittable.h
-			src/object-library/sphere.h
-			src/object-library/hittable-list.h
-			src/object-library/util.h
-			src/object-library/interval.h
-			src/object-library/camera.h
+ INTERFACE
+  FILE_SET HEADERS
+  BASE_DIRS
+   src/object-library
+  FILES
+   src/object-library/vec3.h
+   src/object-library/ray.h
+   src/object-library/color.h
+   src/object-library/hittable.h
+   src/object-library/sphere.h
+   src/object-library/hittable-list.h
+   src/object-library/util.h
+   src/object-library/interval.h
+   src/object-library/camera.h
+   src/object-library/material.h
 )
 
 target_include_directories(vec
-	INTERFACE
-		src/object-library
+ INTERFACE
+  src/object-library
 )
 
 target_link_libraries(main
-	PRIVATE
-		vec
+ PRIVATE
+  vec
 )

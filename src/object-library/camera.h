@@ -4,6 +4,7 @@
 #include "hittable.h"
 #include "color.h"
 #include "util.h"
+#include "material.h"
 
 class camera {
     public:
@@ -11,7 +12,6 @@ class camera {
         int image_width = 100;
         int samples_per_pixel = 100;
         double sample_radius = 0.5;
-        bool diffuse = true;
         double diffusion_colour_amount = 0.5;
         int max_recurse_depth = 10;
 
@@ -142,15 +142,11 @@ class camera {
 
             hit_record rec;
             if (world.hit(r, interval(0.001, infinity), rec)) {
-                vec3 direction;
-
-                // Conditionally apply diffusion
-                if (diffuse) {
-                    direction = rec.normal + random_unit_vector();
-                    return  diffusion_colour_amount * ray_color(ray(rec.p, direction), depth - 1, world);
-                }
-
-                return 0.5 * (rec.normal + color(1, 1, 1));
+                ray scattered;
+                color attenuation;
+                if (rec.mat->scatter(r, rec, attenuation, scattered))
+                    return attenuation * ray_color(scattered, depth-1, world);
+                return color(0, 0, 0);
             }
 
             vec3 unit_direction = unit_vector(r.direction());
