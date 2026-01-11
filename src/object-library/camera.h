@@ -6,6 +6,8 @@
 #include "util.h"
 #include "material.h"
 
+#include <chrono>
+
 class camera {
     public:
         double aspect_ratio = 1.0;
@@ -16,12 +18,13 @@ class camera {
         int max_recurse_depth = 10;
 
         void render(const hittable& world) {
+            auto start = std::chrono::high_resolution_clock::now();
             initialize();
 
             std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
             for (int j = 0; j < image_height; j++) {
-                generate_loading_bar(j);
+                generate_loading_bar(j, start);
                 for (int i = 0; i < image_width; i++) {
                     color pixel_color(0,0,0);
 
@@ -34,8 +37,11 @@ class camera {
                     write_color(std::cout, pixel_samples_scale * pixel_color);
                 }
             }
-
-            std::clog << "\rDone.                                                                                                         \n";
+            auto stop = std::chrono::high_resolution_clock::now();
+            auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop - start).count();
+            long long minutes = duration / 60;
+            long long seconds = duration % 60;
+            std::clog << "\rTotal time taken" << minutes << "m " << seconds % 60 << "s                                                                                                 \n";
         }
 
     private:
@@ -47,15 +53,20 @@ class camera {
         vec3 pixel_delta_u;
         vec3 pixel_delta_v;
 
-        void generate_loading_bar(int j) {
+        void generate_loading_bar(int j, const std::chrono::time_point<std::chrono::high_resolution_clock>& start) {
             int percent_complete = static_cast<int>((double(j)/image_height) * 100.0);
+            auto now = std::chrono::high_resolution_clock::now();
+            auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now-start).count();
+            long long minutes = elapsed / 60;
+            long long seconds = elapsed % 60;
+
             std::clog << "[";
             for (int i = 0; i < 100; i++) {
                 if (i < percent_complete) std::clog << "=";
                 else if (i == percent_complete) std::clog << ">";
                 else std::clog << " ";
             }
-            std::clog << "] " << percent_complete << "% \r";
+            std::clog << "] " << percent_complete << "%, Elapsed Time: " << minutes << "m " << seconds << "s \r";
         }
 
         void initialize() {
