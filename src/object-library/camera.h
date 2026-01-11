@@ -41,7 +41,7 @@ class camera {
             auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop - start).count();
             long long minutes = duration / 60;
             long long seconds = duration % 60;
-            std::clog << "\rTotal time taken" << minutes << "m " << seconds % 60 << "s                                                                                                 \n";
+            std::clog << "\rTotal time taken: " << minutes << "m " << seconds % 60 << "s                                                                                                                                                \n";
         }
 
     private:
