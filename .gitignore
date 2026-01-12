@@ -3,3 +3,4 @@ Build/
 [Bb]uild/
 *.ppm
 .cache/
+compile_commands.json

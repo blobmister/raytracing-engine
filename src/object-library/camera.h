@@ -7,6 +7,9 @@
 #include "material.h"
 
 #include <chrono>
+#include <thread>
+#include <atomic>
+#include <vector>
 
 class camera {
     public:
@@ -17,14 +20,31 @@ class camera {
         double diffusion_colour_amount = 0.5;
         int max_recurse_depth = 10;
 
+        double vfov = 90;
+        point3 lookfrom = point3(0, 0, 0);
+        point3 lookat = point3(0, 0, -1);
+        vec3 vup = vec3(0, 1, 0);
+
+        double defocus_angle = 0;
+        double focus_dist = 10;
+
+        bool multithread_mode = false;
+
         void render(const hittable& world) {
+            if (multithread_mode) multi_thread_render(world);
+            else single_thread_render(world);
+        }
+
+        void single_thread_render(const hittable& world) {
             auto start = std::chrono::high_resolution_clock::now();
             initialize();
+
+            int total = image_height * image_width;
+            int cur = 0;
 
             std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
             for (int j = 0; j < image_height; j++) {
-                generate_loading_bar(j, start);
                 for (int i = 0; i < image_width; i++) {
                     color pixel_color(0,0,0);
 
@@ -35,13 +55,67 @@ class camera {
                     }
 
                     write_color(std::cout, pixel_samples_scale * pixel_color);
+                    ++cur;
+                    generate_loading_bar(cur, total, start);
                 }
             }
             auto stop = std::chrono::high_resolution_clock::now();
             auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop - start).count();
             long long minutes = duration / 60;
             long long seconds = duration % 60;
-            std::clog << "\rTotal time taken: " << minutes << "m " << seconds % 60 << "s                                                                                                                                                \n";
+            std::clog << "\rTotal time taken: " << minutes << "m " << seconds << "s                                                                                                                                                \n";
+        }
+
+        void multi_thread_render(const hittable& world) {
+            auto start = std::chrono::high_resolution_clock::now();
+            initialize();
+
+            int total  = image_height * image_width;
+            std::vector<color> colors(total);
+            std::atomic<int> completed = 0;
+
+            int thread_count = std::thread::hardware_concurrency();
+            if (thread_count == 0) {
+                std::clog << "Unable to determine thread count, defaulting to 2\n";
+                thread_count = 2;
+            }
+
+            std::vector<std::thread> threads;
+            int rows_per_thread = image_height / thread_count;
+            for (int i{}; i < thread_count; ++i) {
+                int start = i * rows_per_thread;
+                int end = (i == thread_count - 1) ? image_height : start + rows_per_thread;
+                threads.emplace_back(
+                    &camera::render_row,
+                    this,
+                    std::cref(world),
+                    std::ref(colors),
+                    std::ref(completed),
+                    start,
+                    end
+                );
+            }
+
+
+            while (completed < total) {
+                generate_loading_bar(completed, total, start);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
+
+            for (auto& t : threads) {
+                t.join();
+            }
+
+            std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+            for (int i{}; i < total; ++i) {
+                write_color(std::cout, pixel_samples_scale * colors[i]);
+            }
+
+            auto stop = std::chrono::high_resolution_clock::now();
+            auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop - start).count();
+            long long minutes = duration / 60;
+            long long seconds = duration % 60;
+            std::clog << "\rTotal time taken: " << minutes << "m " << seconds << "s                                                                                                                               \n";
         }
 
     private:
@@ -52,9 +126,12 @@ class camera {
         point3 pixel00_loc;
         vec3 pixel_delta_u;
         vec3 pixel_delta_v;
+        vec3 u, v, w;
+        vec3 defocus_disk_u;
+        vec3 defocus_disk_v;
 
-        void generate_loading_bar(int j, const std::chrono::time_point<std::chrono::high_resolution_clock>& start) {
-            int percent_complete = static_cast<int>((double(j)/image_height) * 100.0);
+        void generate_loading_bar(const int cur, int total, const std::chrono::time_point<std::chrono::high_resolution_clock>& start) {
+            int percent_complete = static_cast<int>((double(cur)/total) * 100.0);
             auto now = std::chrono::high_resolution_clock::now();
             auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now-start).count();
             long long minutes = elapsed / 60;
@@ -69,48 +146,51 @@ class camera {
             std::clog << "] " << percent_complete << "%, Elapsed Time: " << minutes << "m " << seconds << "s \r";
         }
 
+        void render_row(const hittable& world, std::vector<color>& colors, std::atomic<int>& completed, int start_row, int end_row) {
+
+            for  (int j = start_row; j < end_row; ++j) {
+                for (int i{}; i < image_width; ++i) {
+                    color pixel_color(0, 0, 0);
+                    for (int sample{}; sample < samples_per_pixel; sample++) {
+                        ray r = get_ray(i, j);
+                        pixel_color += ray_color(r, max_recurse_depth, world);
+                    }
+
+                    colors[j * image_width + i] = pixel_color;
+                    ++completed;
+                }
+            }
+        }
+
         void initialize() {
-            /*
-                Image
-
-                A 16/9 aspect ratio is used. Actual pixel numbers are approxiamte. A minimum height of 1
-                is set incase image_width is too low to maintain aspect ratio.
-
-            */
-
             image_height = int(image_width / aspect_ratio);
             image_height = (image_height < 1) ? 1 : image_height;
 
             pixel_samples_scale = 1.0 / samples_per_pixel;
 
-            center = point3(0, 0, 0);
+            center = lookfrom;
 
-
-            auto focal_length = 1.0;
-            auto viewport_height = 2.0;
+            auto theta = degrees_to_radians(vfov);
+            auto h = std::tan(theta/2);
+            auto viewport_height = 2 * h * focus_dist;
             auto viewport_width = viewport_height * (double(image_width)/image_height);
 
-            /*
-                Viewport vectors
+            w = unit_vector(lookfrom - lookat);
+            u = unit_vector(cross(vup, w));
+            v = cross(w, u);
 
-                A separate coordinate system from the camera system is required to render the viewport iamge
-                This is as (0, 0) on the viewport is assumed to be the top left of the viewport, but it is considered
-                to be the center on the camera coordinate system.
-
-                viewport_u represents the horizontal vector from (0, 0) to the right edge of the viewport
-                viewport_v represents the horiztonal vector from (0, 0) to the bottom edge of the viewport
-
-            */
-            auto viewport_u = vec3(viewport_width, 0, 0);
-            auto viewport_v = vec3(0, -viewport_height, 0);
+            vec3 viewport_u = viewport_width * u;
+            vec3 viewport_v = viewport_height * -v;
 
             pixel_delta_u = viewport_u / image_width;
             pixel_delta_v = viewport_v / image_height;
 
-            auto viewport_upper_left = center - vec3(0, 0, focal_length) - viewport_u/2 - viewport_v/2;
+            auto viewport_upper_left = center - (focus_dist * w) - viewport_u/2 - viewport_v/2;
 	        pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
-
+			auto defocus_radius = focus_dist * std::tan(degrees_to_radians(defocus_angle / 2));
+			defocus_disk_u = u * defocus_radius;
+			defocus_disk_v = v * defocus_radius;
         }
 
         /*
@@ -126,7 +206,7 @@ class camera {
             auto offset = sample_square();
             auto pixel_sample = pixel00_loc + ((i + offset.x()) * pixel_delta_u) + ((j + offset.y()) * pixel_delta_v);
 
-            auto ray_origin = center;
+            auto ray_origin = (defocus_angle <= 0) ? center : defocus_disk_sample();
             auto ray_direction = pixel_sample - ray_origin;
 
             return ray(ray_origin, ray_direction);
@@ -142,6 +222,11 @@ class camera {
             auto py = random_double() - 0.5;
 
             return vec3(px * sample_radius * 2, py * sample_radius * 2, 0);
+        }
+
+        point3 defocus_disk_sample() const {
+            auto p = random_in_unit_disk();
+            return center + (p[0] * defocus_disk_u) + (p[1] * defocus_disk_v);
         }
 
 
