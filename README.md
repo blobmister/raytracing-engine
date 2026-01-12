@@ -3,6 +3,9 @@ A simple raytracing engine made by following [this](https://raytracing.github.io
 
 WIP: I extend on this further by implementing multi-threading + CUDA optimisations, and then use a micro-benchmarking tool to compare performance between single thread CPU, multi thread CPU, and multi thread GPU for basic graphics tasks.
 
+
+For more details about my current progress, how I have optimized the render times compared to the original guide, and other implmenetation features of the project, please consult the [wiki](https://github.com/blobmister/raytracing-engine/wiki).
+
 # Usage
 To compile, run the following commands in the root directory:
 
