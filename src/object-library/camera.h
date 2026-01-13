@@ -35,6 +35,11 @@ class camera {
             else single_thread_render(world);
         }
 
+        /*
+         *
+         * CPU Single threaded render function. Sequentially calculates the colour value for each pixel one by one
+         *
+         */
         void single_thread_render(const hittable& world) {
             auto start = std::chrono::high_resolution_clock::now();
             initialize();
@@ -59,12 +64,18 @@ class camera {
                     generate_loading_bar(cur, total, start);
                 }
             }
+
+            // Calculate total time taken
             auto stop = std::chrono::high_resolution_clock::now();
             auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop - start).count();
             long long minutes = duration / 60;
             long long seconds = duration % 60;
             std::clog << "\rTotal time taken: " << minutes << "m " << seconds << "s                                                                                                                                                \n";
         }
+
+        /*
+         * Simple Multi-Threaded implmenetation. Divides work to be done across several different threads
+         */
 
         void multi_thread_render(const hittable& world) {
             auto start = std::chrono::high_resolution_clock::now();
@@ -74,29 +85,32 @@ class camera {
             std::vector<color> colors(total);
             std::atomic<int> completed = 0;
 
+            // Obtain available threads on machine
             int thread_count = std::thread::hardware_concurrency();
             if (thread_count == 0) {
                 std::clog << "Unable to determine thread count, defaulting to 2\n";
                 thread_count = 2;
             }
 
+            // Initialize all threads
             std::vector<std::thread> threads;
             int rows_per_thread = image_height / thread_count;
             for (int i{}; i < thread_count; ++i) {
-                int start = i * rows_per_thread;
-                int end = (i == thread_count - 1) ? image_height : start + rows_per_thread;
+                int offset = i;
+                int chunk_size = thread_count;
+
                 threads.emplace_back(
-                    &camera::render_row,
+                    &camera::render_batch,
                     this,
                     std::cref(world),
                     std::ref(colors),
                     std::ref(completed),
-                    start,
-                    end
+                    offset,
+                    thread_count
                 );
             }
 
-
+            // Periodically generate the loading bar. This thread is
             while (completed < total) {
                 generate_loading_bar(completed, total, start);
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -146,9 +160,9 @@ class camera {
             std::clog << "] " << percent_complete << "%, Elapsed Time: " << minutes << "m " << seconds << "s \r";
         }
 
-        void render_row(const hittable& world, std::vector<color>& colors, std::atomic<int>& completed, int start_row, int end_row) {
+        void render_batch(const hittable& world, std::vector<color>& colors, std::atomic<int>& completed, int offset, int chunk_size) {
 
-            for  (int j = start_row; j < end_row; ++j) {
+            for  (int j = offset; j < image_height; j += chunk_size) {
                 for (int i{}; i < image_width; ++i) {
                     color pixel_color(0, 0, 0);
                     for (int sample{}; sample < samples_per_pixel; sample++) {
