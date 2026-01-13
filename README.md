@@ -1,4 +1,4 @@
-# Basic Ray Tracing Engine
+# Ray Tracing Engine
 A simple raytracing engine made by following [this](https://raytracing.github.io/books/RayTracingInOneWeekend.html) guide. 
 
 WIP: I extend on this further by implementing multi-threading + CUDA optimisations, and then use a micro-benchmarking tool to compare performance between single thread CPU, multi thread CPU, and multi thread GPU for basic graphics tasks.
@@ -20,5 +20,9 @@ cd build
 ./main > image.ppm
 ```
 # Features
-Allows users to generate images of basic spheres, of differing materials. Will eventually allow users to configure an environment using a simple config.txt file, which the program should read in to create images, allowing for comparisons between single-core CPU, multi-core CPU, and multi-core GPU in the mathematics involved in generating these images.
+Currently has support to render images using multi-core and single-core CPU. Eventually will add support for a simple script to generate images without recompilation of the program using a basic config file style syntax. Currently working on using the GPU to reduce render times.
+
+# Sample Image
+<img width="400" height="225" alt="image" src="https://github.com/user-attachments/assets/72386795-98cb-426e-b774-9bb8c34daa93" />
+
 
